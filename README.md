@@ -59,8 +59,10 @@ category: string;
 
 ### Информация о покупателе
 
+```
 email: string;
 phone: number;
+```
 
 
 ### Корзина товаров
