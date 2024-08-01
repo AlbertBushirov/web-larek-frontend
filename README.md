@@ -183,9 +183,10 @@ FormErrors = Partial<Record<keyof IOrder, string>>;
 Методы: 
 - addBasket - добавляет товар в корзину;
 - getQuantity - возвращает количество товаров в корзине;
+- clearOrder - очищает данные заказа;
 - removeBasket - удаляет товар из корзины;
 - clearBasket - очищает товары в корзине;
-- clearOrder - очищает данные заказа;
+
 
 
 ### Класс Page 
