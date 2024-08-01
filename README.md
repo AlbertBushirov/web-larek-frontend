@@ -166,7 +166,7 @@ FormErrors = Partial<Record<keyof IOrder, string>>;
 - callEvent - вызывает событие;
 
 
-## Описание классов данных;
+## Описание классов данных
 
 
 ### Класс AppData 
