@@ -45,8 +45,7 @@ yarn build
 ## Типы данных
 
 
-
-### Интерфейс описывает данные частей приложения: каталог, превью, корзина, форма заказа interface IAppState
+Интерфейс описывает данные частей приложения: каталог, превью, корзина, форма заказа interface IAppState
 ```
 catalog: IProductItem[];
 preview: string;
@@ -57,53 +56,53 @@ loading: boolean;
 ```
 
 
-### Пользовательские действия interface IActions
+Пользовательские действия interface IActions
 ```
 onClick: (event: MouseEvent) => void; 
 ```
 
 
-### Информация о доставке товара interface IDeliveryForm
+Информация о доставке товара interface IDeliveryForm
 ```
 payment: string;
 address: string;
 ```
 
 
-### Успешное действие interface ISuccessActions
+Успешное действие interface ISuccessActions
 ```
 onClick: ()  => void;
 ```
 
 
-### Информация о заказе interface IOrder extends IDeliveryForm, IContactForm
+Информация о заказе interface IOrder extends IDeliveryForm, IContactForm
 ```
 total: number;
 items: string[];
 ```
 
-###  Ответ от сервера о заказе interface IOrderResult
+Ответ от сервера о заказе interface IOrderResult
 ```
 id: string;
 total: number;
 ```
 
 
-### Информация о покупателе interface IContactForm
+Информация о покупателе interface IContactForm
 ```
 email: string;
 phone: string;
 ```
 
 
-### Главная страница interface IPage
+Главная страница interface IPage
 ```
 counter: number;
 catalog: HTMLElement[];
 ```
 
 
-### Информация о товарах interface ICardItem
+Информация о товарах interface ICardItem
 ```
 id: string;
 title: string;
@@ -114,47 +113,47 @@ category: string;
 ```
 
 
-### Отображение карточки товара interface ICard extends IProduct
+Отображение карточки товара interface ICard extends IProduct
 ```
 index?: string;
 buttonTitle?: string;
 ```
 
 
-### Товар в модальном окне interface IModalData
+Товар в модальном окне interface IModalData
 ```
 content: HTMLElement;
 ```
 
 
-###  Форма interface IFormState
+Форма interface IFormState
 ```
 valid: boolean;
 errors: string[];
 ```
 
 
-###  Отображение корзины товаров interface IBasketView
+Отображение корзины товаров interface IBasketView
 ```
 items: HTMLElement[];
 total: number;
 ```
 
 
-###  Отображения успешного заказа interface ISuccess
+Отображения успешного заказа interface ISuccess
 ```
  total: number; // Общая стоимость заказа
 ```
 
 
-###  Состояние формы interface IFormState
+Состояние формы interface IFormState
 ```
 valid: boolean;
 errors: string[];
 ```
 
 
-### Тип ошибки заказа 
+Тип ошибки заказа 
 
 ```
 FormErrors = Partial<Record<keyof IOrder, string>>;
