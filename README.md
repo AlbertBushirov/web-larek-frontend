@@ -75,12 +75,14 @@ interface IProductsList {
 ```
 
 Данные формы заказа
+```
 interface IOrderForm {
   payment: string;
   address: string;
   phone: string;
   email: string;
 }
+```
 
 Данные покупки
 ```
