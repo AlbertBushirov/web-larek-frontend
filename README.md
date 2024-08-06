@@ -45,7 +45,7 @@ yarn build
 ## Данные и типы данных, используемые в приложении
 
 
-Интерфейс описывает данные частей приложения: каталог, превью, корзина, форма заказа interface IAppState
+Интерфейс описывает данные частей приложения: каталог, превью, корзина, форма заказа - IAppState
 ```
 catalog: IProduct[];
 preview: string;
@@ -55,47 +55,37 @@ total: string | number;
 loading: boolean;
 ```
 
-Продукт
+Продукт interface IProductItem
 ```
-interface IProductItem {
   id: string;
   title: string;
   description: string;
   category: string;
   image: string;
   price: number | null;
-}
 ```
 
-Список продуктов
+Список продуктов interface IProductsList
 ```
-interface IProductsList {
   products: IProductItem[];
-}
 ```
 
-Данные формы заказа
+Данные формы заказа interface IOrderForm
 ```
-interface IOrderForm {
   payment: string;
   address: string;
   phone: string;
   email: string;
-}
 ```
 
-Данные покупки
+Данные покупки interface IOrder extends IOrderForm
 ```
-interface IOrder extends IOrderForm {
   items: string[];
-}
 ```
 
-Интерфейс успешного заказа
+Интерфейс успешного заказа - IOrderResult
 ```
-interface IOrderResult {
   id: string;
-}
 ```
 
 Тип ошибки заказа
