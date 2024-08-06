@@ -1,41 +1,42 @@
 // Приложение
-export interface ILarekApp {
-	basket: IBasket[];
-	cardsList: ICardItem[];
-	preview: string | null;
-	order: IOrder | null;
+export interface IAppDate {
+	catalog: IProductItem[];
+	preview: string;
+	basket: string[];
+	order: IOrder;
+	total: string | number;
+	loading: boolean;
   }
   
   // Товар
-  export interface ICardItem {
+  export interface IProductItem {
 	id: string;
-	description: string;
-	image: string;
 	title: string;
+	description: string;
 	category: string;
+	image: string;
 	price: number | null;
-	inBasket: boolean;
   }
   
   // Данные заказа
-  export interface IOrder {
-	payment: string;
-	address: string;
-	email: string;
-	phone: string;
-	total: number;
-	id: string[];
+  export interface IOrderForm {
+  payment: string;
+  address: string;
+  phone: string;
+  email: string;
+  total: string | number;
   }
   
-  // Корзина
-  export interface IBasket {
-	quantity: number;
-	title: string;
-	price: number;
-	totalPrice: number;
+  export interface IProductsList {
+	products: IProductItem[];
+  }
+
+  export interface IOrder extends IOrderForm {
+	items: string[];
   }
   
   export type FormErrors = Partial<Record<keyof IOrder, string>>;
   
-  // Список используемых констант
-  export enum EventTypes {}
+  export interface IOrderResult {
+	id: string;
+  }

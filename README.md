@@ -42,12 +42,12 @@ yarn build
 ```
 
 
-## Типы данных
+## Данные и типы данных, используемые в приложении
 
 
 Интерфейс описывает данные частей приложения: каталог, превью, корзина, форма заказа interface IAppState
 ```
-catalog: IProductItem[];
+catalog: IProduct[];
 preview: string;
 basket: string[];
 order: IOrder;
@@ -55,110 +55,51 @@ total: string | number;
 loading: boolean;
 ```
 
-
-Пользовательские действия interface IActions
+Продукт
 ```
-onClick: (event: MouseEvent) => void; 
-```
-
-
-Информация о доставке товара interface IDeliveryForm
-```
-payment: string;
-address: string;
-```
-
-
-Успешное действие interface ISuccessActions
-```
-onClick: ()  => void;
+interface IProductItem {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  image: string;
+  price: number | null;
+}
 ```
 
-
-Информация о заказе interface IOrder extends IDeliveryForm, IContactForm
+Список продуктов
 ```
-total: number;
-items: string[];
-```
-
-Ответ от сервера о заказе interface IOrderResult
-```
-id: string;
-total: number;
+interface IProductsList {
+  products: IProductItem[];
+}
 ```
 
+Данные формы заказа
+interface IOrderForm {
+  payment: string;
+  address: string;
+  phone: string;
+  email: string;
+}
 
-Информация о покупателе interface IContactForm
+Данные покупки
 ```
-email: string;
-phone: string;
-```
-
-
-Главная страница interface IPage
-```
-counter: number;
-catalog: HTMLElement[];
-```
-
-
-Информация о товарах interface ICardItem
-```
-id: string;
-title: string;
-price: number | null;
-image: string;
-description: string;
-category: string;
+interface IOrder extends IOrderForm {
+  items: string[];
+}
 ```
 
-
-Отображение карточки товара interface ICard extends IProduct
+Интерфейс успешного заказа
 ```
-index?: string;
-buttonTitle?: string;
-```
-
-
-Товар в модальном окне interface IModalData
-```
-content: HTMLElement;
+interface IOrderResult {
+  id: string;
+}
 ```
 
-
-Форма interface IFormState
+Тип ошибки заказа
 ```
-valid: boolean;
-errors: string[];
+type FormErrors = Partial<Record<keyof IOrder, string>>;
 ```
-
-
-Отображение корзины товаров interface IBasketView
-```
-items: HTMLElement[];
-total: number;
-```
-
-
-Отображения успешного заказа interface ISuccess
-```
- total: number; // Общая стоимость заказа
-```
-
-
-Состояние формы interface IFormState
-```
-valid: boolean;
-errors: string[];
-```
-
-
-Тип ошибки заказа 
-
-```
-FormErrors = Partial<Record<keyof IOrder, string>>;
-```
-
 
 ## Архитектура приложения
 
@@ -239,21 +180,21 @@ FormErrors = Partial<Record<keyof IOrder, string>>;
 Главная модель управления проектом. Содержит в себе основные данные и методы для работы с моделью данных в целом. Наследуется от класса Model;
 
 Поля класса:
-- catalog - данные списока товара;
-- preview - данные выбранного товара;
-- bascket - данные корзины покупок;
-- order - данные заказа;
+- catalog - для данных списка товаров;
+- preview - для данных выбранного товара (попап);
+- bascket - ддля данных корзины покупок;
+- order - для данных заказа, который отправляется на сервер;
 
 Конструктор: constructor() - конструктор наследуется от класса Model;
 
 Методы:
 - addBasket - добавляет товар в корзину;
 - getCounter - возвращает количество товаров в корзине;
-- getSumAll - вывод суммы синапсов всех товаров в корзине;
+- getSumAll - выводит суммы синапсов всех товаров в корзине;
 - clearBasket - очищает товары в корзине;
 - clearOrder - очищает данные заказа;
 - setCatalog - формирует каталог продуктов, преобразуя каждый элемент в экземпляр Product;
-- setPreview - предпросомотр продукта;
+- setPreview - установливает данные в первью;
 - removeBasket - удаляет товар из корзины;
 - setOrderField - обновляет поле формы заказа, проверяет валидность заказа;
 - setContactField - устанавливает значения в данные контактов заказа;
@@ -270,9 +211,10 @@ FormErrors = Partial<Record<keyof IOrder, string>>;
 Класс отвечает за отображение корзины, счетчика корзины и каталога товаров;
 
 Поля класса: 
-- counter(value: number) - показывает количество товаров в корзине;
-- catalog(items: HTMLElement[]) - показывает список товаров;
-- locked(value: boolean) - показывает состояние блокировки страницы
+- counter - отвечает за счетчик корзины
+- catalog - отвечает за хранение разметки каталога карточек
+- buttonBasket - отвечает за хранение разметки кнопки корзины
+- wrapper - отвечает за хранение обертки страницы
 
 Конструктор: (container: HTMLElement, protected events: IEvents) в конструкторе устанавливается обработчик события для элемента корзины, который открывает окно с выбранными товарами;
 
@@ -292,9 +234,22 @@ FormErrors = Partial<Record<keyof IOrder, string>>;
 - image - устанавливает изображение карточки;
 - price - устанавливает цену карточки и, если цена установлена, отключает кнопку карточки;
 - description - устанавливает описание карточки;
-- inBasket - устанавливает, находится ли карточка в корзине, и, если нет, отключает кнопку карточки;
 
 Конструктор: (container: HTMLElement, actions?: ICardAction) принимает контейнер для карточки и объект действий. В конструкторе устанавливаются обработчики событий для категории, заголовка, описания, кнопки, стоимости
+
+Класс использует интерфейсы ICard и ICardAction
+ICard
+```
+title: string;
+category: string;
+image: string;
+price: number;
+text: string;
+```
+ICardAction
+```
+onClick(evt:MouseElement) => void;
+```
 
 Методы: 
 - cardImage - устанавливает изображение карточки;
@@ -311,12 +266,17 @@ FormErrors = Partial<Record<keyof IOrder, string>>;
 - content - хранение разметки контейнера модального окна;
 - closeButton - хранение кнопки модального окна;
 
+Интерфейс класса - IModalData
+```
+content:HTMLElement;
+```
+
 Конструктор: (selector: string, events: IEvents) принимает селектор, в котором будет установленно модальное окно и экземпляр класса EventEmitter для возможности инициализации событий
 
 Методы:
 - openModal - открывает модальное окно;
 - closeModal - закрывает модальное окно;
-- content - содержимое модального окна;s
+- content - устанавливает содержимое корзины;
 - render - отображает модальное окно с контентом и открывает его;
 
 
@@ -328,13 +288,19 @@ FormErrors = Partial<Record<keyof IOrder, string>>;
 - errors - разметка ошибок в инпуте;
 - supbmit - разметка кнопки;
 
+Интерфейс класса - IForm
+```
+errors:string[];
+valid:boolean;
+```
+
 Конструктор: (protected container: HTMLFormElement, protected events: IEvents) принимает селекторы полей форм, кнопки отправки форм и окна "заказ оформлен";
 
 Методы: 
 - hideValidation - открывает окно "Заказ оформлен"
 - enableValidation - валидация полей форм;
 - clearValidation - чистит правильно заполненную форму;
-- findErrors - найти ошибку;
+- findErrors - находит ошибку;
 
 
 ### OrderAddress
@@ -390,6 +356,16 @@ FormErrors = Partial<Record<keyof IOrder, string>>;
 
 Поля класса:
 - total - разметка суммы товаров;
+
+Класс использует интерфейсы ISuccess и ISuccessActions
+ISuccess
+```
+total:string | number;
+```
+ISuccessActions
+```
+onClick: () => void;
+```
 
 Конструктор: (container:HTMLElement и actions:ISuccessActions) принимает элемент успешной оплаты и устанавливает обработчик события для кнопки закрытия;
 
