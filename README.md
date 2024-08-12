@@ -335,7 +335,7 @@ content:HTMLElement;
 
 ```
 valid: boolean;
-	errors: string[];
+errors: string[];
 ```
 
 Конструктор: (protected container: HTMLFormElement, protected events: IEvents) принимает селекторы полей форм, кнопки отправки форм и окна "заказ оформлен";
