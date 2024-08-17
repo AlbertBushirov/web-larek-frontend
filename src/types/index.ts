@@ -10,10 +10,10 @@ export interface IProductItem {
 // Товар
 export interface ICardItem {
 	id: string;
-	description: string;
-	image: string;
 	title: string;
+	description: string;
 	category: string;
+	image: string;
 	price: number | null;
 	inBasket: boolean;
 }
@@ -26,6 +26,7 @@ export interface IOrder {
 	phone: string;
 	total: number;
 	id: string[];
+	items: string[];
 }
 
 // Корзина
@@ -36,23 +37,5 @@ export interface IBasket {
 	totalPrice: number;
 }
 
+// Тип ошибок формы
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
-
-// Список используемых констант
-export enum EventTypes {
-	ITEMS_CHANGED = 'items:changed',
-	CARD_SELECT = 'card:select',
-	PREVIEW_CHANGED = 'preview:changed',
-	BASKET_ADD = 'basket:add',
-	PRODUCT_DELETE = 'product:delete',
-	BASKET_OPEN = 'basket:open',
-	ORDER_OPEN = 'order:open',
-	FORM_ERRORS_CHANGE = 'formErrors:change',
-	ORDER_READY = 'order:ready',
-	ORDER_SUBMIT = 'order:submit',
-	CONTACTS_READY = 'contacts:ready',
-	CONTACTS_SUBMIT = 'contacts:submit',
-	MODAL_OPEN = 'modal:open',
-	BASKET_CHANGED = 'basket:changed',
-	MODAL_CLOSE = 'modal:close',
-}

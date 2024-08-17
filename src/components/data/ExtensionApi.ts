@@ -7,32 +7,31 @@ interface IOrderResult {
 }
 
 interface IAuctionAPI {
-	getCardList: () => Promise<IProductItem[]>;
-	getCardItem: (id: string) => Promise<IProductItem>;
-	orderCards: (order: IOrder) => Promise<IOrderResult>;
+	getCardList(): Promise<IProductItem[]>;
+	orderProducts(order: IOrder): Promise<IOrderResult>;
+	orderCards(order: IOrder): Promise<IOrderResult>;
 }
 
-export class ExtensionApi extends Api implements IAuctionAPI {
-	readonly cdn: string;
-
-	constructor(cdn: string, baseUrl: string, options?: RequestInit) {
+export class WebLarekAPI extends Api implements IAuctionAPI {
+	readonly api: string;
+	constructor(api: string, baseUrl: string, options?: RequestInit) {
 		super(baseUrl, options);
-		this.cdn = cdn;
+		this.api = api;
 	}
 
-	getCardItem(id: string): Promise<IProductItem> {
-		return this.get(`/product/${id}`).then((item: IProductItem) => ({
-			...item,
-			image: this.cdn + item.image,
-		}));
+	getCardList() {
+		return this.get('/product').then(
+			(response: ApiListResponse<IProductItem>) => {
+				return response.items.map((item) => {
+					return { ...item, image: this.api + item.image };
+				});
+			}
+		);
 	}
 
-	getCardList(): Promise<IProductItem[]> {
-		return this.get('/product').then((data: ApiListResponse<IProductItem>) =>
-			data.items.map((item) => ({
-				...item,
-				image: this.cdn + item.image,
-			}))
+	orderProducts(order: IOrder): Promise<IOrderResult> {
+		return this.post('/order', order).then(
+			(response: IOrderResult) => response
 		);
 	}
 

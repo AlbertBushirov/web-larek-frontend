@@ -3,6 +3,7 @@ import { ensureElement } from '../../utils/utils';
 import { IEvents } from '../base/events';
 import { Form } from './Form';
 
+// Модалньое окно с адресом доставки
 export class OrderAddress extends Form<IOrder> {
 	protected _card: HTMLButtonElement;
 	protected _cash: HTMLButtonElement;
@@ -12,20 +13,21 @@ export class OrderAddress extends Form<IOrder> {
 	constructor(container: HTMLFormElement, events: IEvents) {
 		super(container, events);
 
-		this._card = ensureElement<HTMLButtonElement>(
-			'.button.button_alt[name="card"]',
-			this.container
-		);
-		this._cash = ensureElement<HTMLButtonElement>(
-			'.button.button_alt[name="cash"]',
+		this._contactButton = ensureElement<HTMLButtonElement>(
+			'.order__button',
 			this.container
 		);
 		this._address = ensureElement<HTMLInputElement>(
 			'input[name="address"]',
 			this.container
 		);
-		this._contactButton = ensureElement<HTMLButtonElement>(
-			'.order__button',
+		this._cash = ensureElement<HTMLButtonElement>(
+			'.button.button_alt[name="cash"]',
+			this.container
+		);
+
+		this._card = ensureElement<HTMLButtonElement>(
+			'.button.button_alt[name="card"]',
 			this.container
 		);
 
@@ -50,33 +52,27 @@ export class OrderAddress extends Form<IOrder> {
 	}
 }
 
+// Модальное окно с телефоном и Email
 export class OrderContacts extends Form<IOrder> {
-	protected _email: HTMLInputElement;
-	protected _phone: HTMLInputElement;
-	protected _submitButton: HTMLButtonElement;
+	protected _phoneInput: HTMLInputElement;
+	protected _emailInput: HTMLInputElement;
 
 	constructor(container: HTMLFormElement, events: IEvents) {
 		super(container, events);
 
-		this._email = ensureElement<HTMLInputElement>(
-			'input[name="email"]',
-			this.container
-		);
-		this._phone = ensureElement<HTMLInputElement>(
-			'input[name="phone"]',
-			this.container
-		);
-		this._submitButton = ensureElement<HTMLButtonElement>(
-			'.button',
-			this.container
-		);
-	}
-
-	set email(value: string) {
-		this._email.value = value;
+		this._phoneInput = this.container.elements.namedItem(
+			'phone'
+		) as HTMLInputElement;
+		this._emailInput = this.container.elements.namedItem(
+			'email'
+		) as HTMLInputElement;
 	}
 
 	set phone(value: string) {
-		this._phone.value = value;
+		this._phoneInput.value = value;
+	}
+
+	set email(value: string) {
+		this._emailInput.value = value;
 	}
 }

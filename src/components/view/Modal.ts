@@ -1,4 +1,3 @@
-import { EventTypes } from '../../types/index';
 import { ensureElement } from '../../utils/utils';
 import { Component } from '../base/Component';
 import { IEvents } from '../base/events';
@@ -20,6 +19,7 @@ export class Modal extends Component<IModalData> {
 		);
 		this._content = ensureElement<HTMLElement>('.modal__content', container);
 
+		//обработчики событий для закрытия модального окна
 		this._closeButton.addEventListener('click', this.close.bind(this));
 		this.container.addEventListener('click', this.close.bind(this));
 		this._content.addEventListener('click', (event) => event.stopPropagation());
@@ -29,17 +29,20 @@ export class Modal extends Component<IModalData> {
 		this._content.replaceChildren(value);
 	}
 
+	//Открытие модального окна
 	open() {
-		this.toggleClass(this.container, 'modal_active', true);
-		this.events.emit(EventTypes.MODAL_OPEN);
+		this.container.classList.add('modal_active');
+		this.events.emit('modal:open');
 	}
 
-	close() {
-		this.toggleClass(this.container, 'modal_active', false);
+	// Закрытие модального окна
+	close(): void {
+		this.container.classList.remove('modal_active');
 		this.content = null;
-		this.events.emit(EventTypes.MODAL_CLOSE);
+		this.events.emit('modal:close');
 	}
 
+	//Показать модальное окно
 	render(data: IModalData): HTMLElement {
 		super.render(data);
 		this.open();

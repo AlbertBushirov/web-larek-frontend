@@ -41,11 +41,11 @@ export class Form<T> extends Component<IFormState> {
 	}
 
 	set valid(value: boolean) {
-		this.setDisabled(this._submit, !value);
+		this._submit.disabled = !value;
 	}
 
 	set errors(value: string[]) {
-		this.setText(this._errors, value.join('\n'));
+		this.setText(this._errors, value);
 	}
 
 	render(state: Partial<T> & IFormState) {
