@@ -40,7 +40,7 @@ const contacts = new OrderContacts(cloneTemplate(contactsTemplate), events);
 
 // Обработчик изменения каталога
 events.on<CatalogChangeEvent>('items:changed', () => {
-	page.catalog = appData.catalog.map((item) => {
+	page.catalog = appData.items.map((item) => {
 		const card = new Card(cloneTemplate(cardCatalogTemplate), {
 			onClick: () => events.emit('card:select', item),
 		});
@@ -174,8 +174,11 @@ events.on('contacts:submit', () => {
 					modal.close();
 				},
 			});
+			const card = new Card(cloneTemplate(cardCatalogTemplate));
+			card.disableButton(true);
 			appData.clearOrder(); //очистка данных заказа
 			appData.clearBasket(); //очистка корзины
+			orderForm.resetButtonState(); // очистка кнопок способа оплаты
 			page.counter = appData.basket.length;
 			success.total = result.total.toString();
 			modal.render({

@@ -16,7 +16,6 @@ export interface IOrderForm {
 export class AppData extends Model<IProductItem> {
 	basket: ICardItem[] = [];
 	items: ICardItem[];
-	catalog: ICardItem[];
 	order: IOrder = {
 		payment: '',
 		address: '',
@@ -77,9 +76,9 @@ export class AppData extends Model<IProductItem> {
 	}
 
 	//Добавление каталога карточек на главную страницу
-	setCatalog(items: ICardItem[]) {
-		this.catalog = items;
-		this.emitChanges('items:changed', { catalog: this.catalog });
+	setCatalog(item: ICardItem[]) {
+		this.items = item;
+		this.emitChanges('items:changed', { catalog: this.items });
 	}
 
 	//Предпросмотр продукта validateOrder
@@ -94,7 +93,9 @@ export class AppData extends Model<IProductItem> {
 		//инпут с почтой
 		if (!this.order.email) {
 			errors.email = 'Нужно указать email';
+		} else if (this.order.email) {
 		}
+
 		//инпут с телефоном
 		if (!this.order.phone) {
 			errors.phone = 'Нужно указать телефон';

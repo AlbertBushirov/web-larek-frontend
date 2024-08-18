@@ -32,15 +32,15 @@ export class OrderAddress extends Form<IOrder> {
 		);
 
 		this._card.addEventListener('click', () => {
-			this._setPaymentMethod('card');
+			this.PaymentMethod = 'card';
 		});
 
 		this._cash.addEventListener('click', () => {
-			this._setPaymentMethod('cash');
+			this.PaymentMethod = 'cash';
 		});
 	}
 
-	private _setPaymentMethod(payment: string) {
+	set PaymentMethod(payment: string) {
 		this.toggleClass(this._card, 'button_alt-active', payment === 'card');
 		this.toggleClass(this._cash, 'button_alt-active', payment === 'cash');
 		this.onInputChange('payment', payment);
@@ -49,6 +49,11 @@ export class OrderAddress extends Form<IOrder> {
 
 	set address(value: string) {
 		this._address.value = value;
+	}
+
+	resetButtonState() {
+		this.toggleClass(this._cash, 'button_alt-active', false);
+		this.toggleClass(this._card, 'button_alt-active', false);
 	}
 }
 
