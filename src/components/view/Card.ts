@@ -110,9 +110,9 @@ export class Card extends Component<ICard> {
 	}
 
 	//Отключение кнопки
-	disableButton(value: number | null) {
-		if (!value && this._button) {
-			this._button.disabled = true;
+	disableButton(value: boolean) {
+		if (this._button) {
+			this.setDisabled(this._button, value);
 		}
 	}
 
@@ -120,17 +120,12 @@ export class Card extends Component<ICard> {
 	set price(value: number | null) {
 		this.setText(
 			this._price,
-			value ? `${value.toString()} синапсов` : 'Бесценно'
+			value !== null ? `${value.toString()} синапсов` : 'Бесценно'
 		);
-		this.disableButton(value);
 	}
 
 	get price(): number {
 		return Number(this._price.textContent || '');
-	}
-
-	set activeButton(value: boolean) {
-		this._button.setAttribute('disabled', '');
 	}
 
 	set inBasket(value: boolean) {

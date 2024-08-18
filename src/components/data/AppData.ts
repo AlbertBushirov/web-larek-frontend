@@ -41,10 +41,10 @@ export class AppData extends Model<IProductItem> {
 		return this.order.items.includes(item.id);
 	}
 
-	//Очистить корзину
+	//Очистить корзину после заказа
 	clearBasket() {
 		this.basket = [];
-		this.order.id = [];
+		this.emitChanges('basket:changed', this.basket);
 	}
 
 	//Обновить корзину
@@ -53,7 +53,7 @@ export class AppData extends Model<IProductItem> {
 		this.emitChanges('basket:changed', this.basket);
 	}
 
-	//Удаление продукта из корзины
+	//Удаление продукта из корзины 'basket:changed'
 	removeFromBasket(id: string) {
 		this.basket = this.basket.filter((it) => it.id !== id);
 		this.emitChanges('basket:changed');
@@ -88,11 +88,20 @@ export class AppData extends Model<IProductItem> {
 		this.emitChanges('preview:changed', item);
 	}
 
-	setOrderField(item: keyof IOrderForm, value: string) {
-		this.order[item] = value;
-		if (this.validateOrder()) {
-			this.events.emit('order:ready', this.order);
+	//Валидация формы с контактами
+	validateContact(): boolean {
+		const errors: typeof this.formErrors = {};
+		//инпут с почтой
+		if (!this.order.email) {
+			errors.email = 'Нужно указать email';
 		}
+		//инпут с телефоном
+		if (!this.order.phone) {
+			errors.phone = 'Нужно указать телефон';
+		}
+		this.formErrors = errors;
+		this.events.emit('form:errors:change', this.formErrors);
+		return Object.keys(errors).length === 0;
 	}
 
 	setContactField(field: keyof IOrderForm, value: string) {
@@ -102,21 +111,7 @@ export class AppData extends Model<IProductItem> {
 		}
 	}
 
-	//Валидация формы с контактами
-	validateContact(): boolean {
-		const errors: typeof this.formErrors = {};
-		if (!this.order.email) {
-			errors.email = 'укажите email';
-		}
-		if (!this.order.phone) {
-			errors.phone = 'укажите телефон';
-		}
-		this.formErrors = errors;
-		this.events.emit('contactFormError:change', this.formErrors);
-		return Object.keys(errors).length === 0;
-	}
-
-	//Валидация формы доставки.
+	//Валидация адреса
 	validateOrder() {
 		const errors: typeof this.formErrors = {};
 		if (!this.order.payment) {
@@ -126,8 +121,15 @@ export class AppData extends Model<IProductItem> {
 			errors.address = 'Укажите адрес';
 		}
 		this.formErrors = errors;
-		this.events.emit('deliveryFormError:change', this.formErrors);
+		this.events.emit('form:errors:change', this.formErrors);
 		return Object.keys(errors).length === 0;
+	}
+
+	setOrderField(item: keyof IOrderForm, value: string) {
+		this.order[item] = value;
+		if (this.validateOrder()) {
+			this.events.emit('order:ready', this.order);
+		}
 	}
 
 	orderData() {
