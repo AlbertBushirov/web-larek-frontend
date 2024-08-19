@@ -112,7 +112,7 @@ events.on('order:open', () => {
 			errors: [],
 		}),
 	});
-	appData.order.items = appData.basket.map((item) => item.id);
+	appData.order.id = appData.basket.map((item) => item.id);
 });
 
 events.on(
