@@ -23,7 +23,7 @@ export class AppData extends Model<IProductItem> {
 		phone: '',
 		total: 0,
 		id: [],
-		items: [],
+		
 	};
 	preview: string | null;
 	formErrors: FormErrors = {};
@@ -37,7 +37,7 @@ export class AppData extends Model<IProductItem> {
 	}
 
 	inBasket(item: ICardItem) {
-		return this.order.items.includes(item.id);
+		return this.order.id.includes(item.id);
 	}
 
 	//Очистить корзину после заказа
@@ -67,7 +67,7 @@ export class AppData extends Model<IProductItem> {
 			phone: '',
 			total: 0,
 			id: [],
-			items: [],
+			
 		};
 	}
 
