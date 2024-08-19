@@ -26,7 +26,6 @@ export interface IOrder {
 	phone: string;
 	total: number;
 	id: string[];
-	items: string[];
 }
 
 // Корзина
