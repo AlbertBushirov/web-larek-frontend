@@ -5,19 +5,6 @@ interface ICardActions {
 	onClick: (event: MouseEvent) => void;
 }
 
-interface Category {
-	[key: string]: string;
-}
-
-//Категории товаров
-const category: Category = {
-	'софт-скил': 'card__category_soft',
-	'хард-скил': 'card__category_hard',
-	кнопка: 'card__category_button',
-	другое: 'card__category_other',
-	дополнительное: 'card__category_additional',
-};
-
 interface ICard {
 	id: string;
 	description: string;
@@ -27,35 +14,55 @@ interface ICard {
 	price: number | null;
 	index: string;
 	inBasket: boolean;
+	button: string;
 }
 
-export class Card extends Component<ICard> {
-	protected _category?: HTMLElement;
+export class Card<T> extends Component<ICard> {
 	protected _title: HTMLElement;
-	protected _description?: HTMLElement;
 	protected _image?: HTMLImageElement;
+	protected _category?: HTMLElement;
+	protected _description?: HTMLElement;
 	protected _price: HTMLElement;
 	protected _button?: HTMLButtonElement;
-	protected _index?: HTMLElement;
+	protected _buttonModal?: HTMLButtonElement;
 
-	constructor(container: HTMLElement, actions?: ICardActions) {
+	// Сопоставление категорий с ключами
+	private categoryKey: Record<string, string> = {
+		'софт-скил': '_soft',
+		'хард-скил': '_hard',
+		кнопка: '_button',
+		дополнительное: '_additional',
+		другое: '_other',
+	};
+
+	constructor(
+		protected blockName: string,
+		container: HTMLElement,
+		action?: ICardActions
+	) {
 		super(container);
 
-		// элементы контейнера карточек
 		this._category = container.querySelector('.card__category');
 		this._title = ensureElement<HTMLElement>('.card__title', container);
 		this._description = container.querySelector('.card__text');
 		this._image = container.querySelector('.card__image');
 		this._price = ensureElement<HTMLElement>('.card__price', container);
 		this._button = container.querySelector('.card__button');
-		this._index = container.querySelector('.basket__item-index');
 
-		if (actions?.onClick) {
+		// Добавляем обработчик события клика
+		if (action?.onClick) {
 			if (this._button) {
-				this._button.addEventListener('click', actions.onClick);
+				this._button.addEventListener('click', action.onClick);
 			} else {
-				container.addEventListener('click', actions.onClick);
+				container.addEventListener('click', action.onClick);
 			}
+		}
+	}
+
+	//Отключение кнопки
+	disableButton(value: number | null) {
+		if (!value && this._button) {
+			this._button.disabled = true;
 		}
 	}
 
@@ -67,16 +74,6 @@ export class Card extends Component<ICard> {
 		return this.container.dataset.id || '';
 	}
 
-	//Установка категории карточки
-	set category(value: string) {
-		this.setText(this._category, value);
-		this.toggleClass(this._category, category[value], true);
-	}
-
-	get category(): string {
-		return this._category.textContent || '';
-	}
-
 	//Установка заголовка элемента
 	set title(value: string) {
 		this.setText(this._title, value);
@@ -86,8 +83,34 @@ export class Card extends Component<ICard> {
 		return this._title.textContent || '';
 	}
 
+	set buttonTitle(value: string) {
+		if (this._button) {
+			this.setText(this._button, value);
+		}
+	}
+
+	set image(value: string) {
+		if (this._image instanceof HTMLImageElement) {
+			this._image.src = value;
+			this._image.alt = this._title.textContent;
+		}
+	}
+
+	//Проверка на 'Бесценно'
+	set price(value: number | null) {
+		this.setText(
+			this._price,
+			value ? `${value.toString()} синапсов` : 'Бесценно'
+		);
+		this.disableButton(value);
+	}
+
+	get price(): number {
+		return Number(this._price.textContent || '');
+	}
+
 	//Описание карточки
-	set description(value: string) {
+	set description(value: string | string[]) {
 		if (Array.isArray(value)) {
 			this._description.replaceWith(
 				...value.map((str) => {
@@ -101,46 +124,54 @@ export class Card extends Component<ICard> {
 		}
 	}
 
-	//Отображение изображения карточки
-	set image(value: string) {
-		if (this._image instanceof HTMLImageElement) {
-			this._image.src = value;
-			this._image.alt = this._title.textContent;
+	//Описание категории товара
+	set category(value: string) {
+		this.setText(this._category, value);
+		const category = this._category.classList[0];
+		this._category.className = '';
+		this._category.classList.add(`${category}`);
+		this._category.classList.add(`${category}${this.categoryKey[value]}`);
+	}
+}
+
+export interface IBasketItem {
+	title: string;
+	price: number;
+}
+
+export class BasketElement extends Component<IBasketItem> {
+	protected _index: HTMLElement;
+	protected _title: HTMLElement;
+	protected _price: HTMLElement;
+	protected _button: HTMLButtonElement;
+
+	constructor(container: HTMLElement, index: number, action?: ICardActions) {
+		super(container);
+
+		this._index = ensureElement<HTMLElement>('.basket__item-index', container);
+		this.setText(this._index, index + 1);
+		this._title = ensureElement<HTMLElement>('.card__title', container);
+		this._price = ensureElement<HTMLElement>('.card__price', container);
+		this._button = container.querySelector('.card__button');
+
+		//Обработчик события клика для кнопки
+		if (action?.onClick) {
+			if (this._button) {
+				this._button.addEventListener('click', action.onClick);
+			}
 		}
 	}
 
-	//Отключение кнопки
-	disableButton(value: boolean) {
-		if (this._button) {
-			this.setDisabled(this._button, value);
-		}
-	}
-
-	//Отображение цены карточки
-	set price(value: number | null) {
-		this.setText(
-			this._price,
-			value !== null ? `${value.toString()} синапсов` : 'Бесценно'
-		);
-	}
-
-	get price(): number {
-		return Number(this._price.textContent || '');
-	}
-
-	set inBasket(value: boolean) {
-		if (this._button) {
-			this.setDisabled(this._button, value);
-			this.setText(this._button, value ? 'В корзине' : 'В корзину');
-			this.toggleClass(this._button, 'in-basket', value);
-		}
-	}
-
-	set index(value: string) {
+	set index(value: number) {
 		this.setText(this._index, value);
 	}
 
-	get index(): string {
-		return this._index.textContent || '';
+	set title(value: string) {
+		this.setText(this._title, value);
+	}
+
+	// Отображает цену товаров в корзине
+	set price(value: number) {
+		this.setText(this._price, `${value} синапсов`);
 	}
 }

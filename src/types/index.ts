@@ -11,11 +11,12 @@ export interface IProductItem {
 export interface ICardItem {
 	id: string;
 	title: string;
-	description: string;
 	category: string;
+	description: string;
 	image: string;
 	price: number | null;
 	inBasket: boolean;
+	button: string;
 }
 
 // Данные заказа

@@ -23,7 +23,6 @@ export class AppData extends Model<IProductItem> {
 		phone: '',
 		total: 0,
 		id: [],
-		
 	};
 	preview: string | null;
 	formErrors: FormErrors = {};
@@ -39,6 +38,8 @@ export class AppData extends Model<IProductItem> {
 	//Проверка, находится ли продукт в заказе.
 	productOrder(item: ICardItem): boolean {
 		return this.basket.includes(item);
+	}
+
 	inBasket(item: ICardItem) {
 		return this.order.id.includes(item.id);
 	}

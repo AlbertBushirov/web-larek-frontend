@@ -30,7 +30,7 @@ export class Page extends Component<IPage> {
 			this.events.emit('basket:open');
 		});
 	}
-
+	//Установка значения счетчика корзины.
 	set counter(value: number) {
 		this.setText(this._counter, String(value));
 	}
