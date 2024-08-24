@@ -3,7 +3,7 @@ import { Model } from '../base/Model';
 
 //Изменение каталога
 export type CatalogChangeEvent = {
-	catalog: ICardItem[];
+	catalog: ICardItem;
 };
 
 export interface IOrderForm {
@@ -29,13 +29,16 @@ export class AppData extends Model<IProductItem> {
 	formErrors: FormErrors = {};
 
 	//Добавить товар в корзину
-	addBasket(value: ICardItem) {
-		if (!this.basket.some((item) => item.id === value.id)) {
-			this.basket.push(value);
-			this.emitChanges('basket:changed', this.basket);
+	addBasket(item: ICardItem) {
+		if (this.basket.indexOf(item) < 0) {
+			this.basket.push(item);
+			this.updateBasket();
 		}
 	}
 
+	//Проверка, находится ли продукт в заказе.
+	productOrder(item: ICardItem): boolean {
+		return this.basket.includes(item);
 	inBasket(item: ICardItem) {
 		return this.order.id.includes(item.id);
 	}
@@ -43,16 +46,16 @@ export class AppData extends Model<IProductItem> {
 	//Очистить корзину после заказа
 	clearBasket() {
 		this.basket = [];
-		this.emitChanges('basket:changed', this.basket);
+		this.updateBasket();
 	}
 
 	//Обновить корзину
-	updateBasket(value: ICardItem) {
-		this.basket = this.basket.filter((item) => item !== value);
+	updateBasket() {
+		this.emitChanges('counter:changed', this.basket);
 		this.emitChanges('basket:changed', this.basket);
 	}
 
-	//Удаление продукта из корзины 'basket:changed'
+	//Удаление продукта из корзины
 	removeFromBasket(id: string) {
 		this.basket = this.basket.filter((it) => it.id !== id);
 		this.emitChanges('basket:changed');
@@ -67,12 +70,19 @@ export class AppData extends Model<IProductItem> {
 			phone: '',
 			total: 0,
 			id: [],
-			
 		};
 	}
 
-	getTotalPrice() {
-		return this.basket.reduce((total, item) => total + item.price, 0);
+	getOrderProducts(): ICardItem[] {
+		return this.basket;
+	}
+
+	//Подсчет общей стоимости
+	getTotalPrice(): number {
+		return this.order.id.reduce(
+			(total, item) => total + this.items.find((it) => it.id === item).price,
+			0
+		);
 	}
 
 	//Добавление каталога карточек на главную страницу
@@ -131,13 +141,5 @@ export class AppData extends Model<IProductItem> {
 		if (this.validateOrder()) {
 			this.events.emit('order:ready', this.order);
 		}
-	}
-
-	orderData() {
-		this.order.id = [];
-		this.basket.forEach((item) => {
-			this.order.id.push(item.id);
-		});
-		this.order.total = this.getTotalPrice();
 	}
 }
