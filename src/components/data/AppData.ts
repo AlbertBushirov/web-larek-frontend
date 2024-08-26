@@ -1,4 +1,10 @@
-import { FormErrors, ICardItem, IProductItem, IOrder } from '../../types';
+import {
+	FormErrors,
+	ICardItem,
+	IProductItem,
+	IOrder,
+	PaymenthMethods,
+} from '../../types';
 import { Model } from '../base/Model';
 
 //Изменение каталога
@@ -18,11 +24,11 @@ export class AppData extends Model<IProductItem> {
 	items: ICardItem[];
 	order: IOrder = {
 		payment: '',
-		address: '',
+		items: [],
+		total: 0,
 		email: '',
 		phone: '',
-		total: 0,
-		id: [],
+		address: '',
 	};
 	preview: string | null;
 	formErrors: FormErrors = {};
@@ -40,14 +46,22 @@ export class AppData extends Model<IProductItem> {
 		return this.basket.includes(item);
 	}
 
-	inBasket(item: ICardItem) {
-		return this.order.id.includes(item.id);
-	}
-
 	//Очистить корзину после заказа
 	clearBasket() {
 		this.basket = [];
 		this.updateBasket();
+	}
+
+	//очистка заказа
+	clearOrder() {
+		this.order = {
+			payment: '',
+			address: '',
+			email: '',
+			phone: '',
+			total: 0,
+			items: [],
+		};
 	}
 
 	//Обновить корзину
@@ -62,26 +76,14 @@ export class AppData extends Model<IProductItem> {
 		this.emitChanges('basket:changed');
 	}
 
-	//очистка заказа
-	clearOrder() {
-		this.order = {
-			payment: '',
-			address: '',
-			email: '',
-			phone: '',
-			total: 0,
-			id: [],
-		};
-	}
-
 	getOrderProducts(): ICardItem[] {
 		return this.basket;
 	}
 
 	//Подсчет общей стоимости
 	getTotalPrice(): number {
-		return this.order.id.reduce(
-			(total, item) => total + this.items.find((it) => it.id === item).price,
+		return this.order.items.reduce(
+			(total, item) => total + this.basket.find((it) => it.id === item).price,
 			0
 		);
 	}
@@ -142,5 +144,10 @@ export class AppData extends Model<IProductItem> {
 		if (this.validateOrder()) {
 			this.events.emit('order:ready', this.order);
 		}
+	}
+
+	setPaymentMethod(method: string) {
+		this.order.payment = method as PaymenthMethods;
+		this.validateOrder();
 	}
 }

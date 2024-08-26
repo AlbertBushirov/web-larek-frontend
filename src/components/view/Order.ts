@@ -9,18 +9,32 @@ export class OrderAddress extends Form<IOrder> {
 	protected _cash: HTMLButtonElement;
 	protected _address: HTMLInputElement;
 	protected _contactButton: HTMLButtonElement;
+	protected _paymentContainer: HTMLDivElement;
+	protected _paymentButton: HTMLButtonElement[];
+	protected _addressInput: HTMLInputElement;
 
 	constructor(container: HTMLFormElement, events: IEvents) {
 		super(container, events);
 
-		this._contactButton = ensureElement<HTMLButtonElement>(
-			'.order__button',
+		// Находим элементы формы в контейнере
+		this._paymentContainer = ensureElement<HTMLDivElement>(
+			'.order__buttons',
 			this.container
 		);
-		this._address = ensureElement<HTMLInputElement>(
-			'input[name="address"]',
-			this.container
+		this._paymentButton = Array.from(
+			this._paymentContainer.querySelectorAll('.button_alt')
 		);
+		this._addressInput = this.container.elements.namedItem(
+			'address'
+		) as HTMLInputElement;
+
+		// Добавляем обработчик событий на контейнер кнопок оплаты
+		this._paymentContainer.addEventListener('click', (e: MouseEvent) => {
+			const target = e.target as HTMLButtonElement;
+			this.setToggleClassPayment(target.name);
+			events.emit(`order.payment:change`, { target: target.name });
+		});
+
 		this._cash = ensureElement<HTMLButtonElement>(
 			'.button.button_alt[name="cash"]',
 			this.container
@@ -30,25 +44,21 @@ export class OrderAddress extends Form<IOrder> {
 			'.button.button_alt[name="card"]',
 			this.container
 		);
+	}
 
-		this._card.addEventListener('click', () => {
-			this.PaymentMethod = 'card';
-		});
-
-		this._cash.addEventListener('click', () => {
-			this.PaymentMethod = 'cash';
+	//Переключение классов кнопки оплаты
+	setToggleClassPayment(className: string) {
+		this._paymentButton.forEach((button) => {
+			this.toggleClass(button, 'button_alt-active', button.name === className);
 		});
 	}
 
-	set PaymentMethod(payment: string) {
-		this.toggleClass(this._card, 'button_alt-active', payment === 'card');
-		this.toggleClass(this._cash, 'button_alt-active', payment === 'cash');
-		this.onInputChange('payment', payment);
-		this.events.emit('order_change_payment_type', { payment });
-	}
-
+	/**
+	 * Установка значения адреса.
+	 * @param {string} value - Новое значение адреса.
+	 */
 	set address(value: string) {
-		this._address.value = value;
+		this._addressInput.value = value;
 	}
 
 	resetButtonState() {

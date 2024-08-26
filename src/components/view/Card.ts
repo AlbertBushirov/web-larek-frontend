@@ -90,10 +90,7 @@ export class Card<T> extends Component<ICard> {
 	}
 
 	set image(value: string) {
-		if (this._image instanceof HTMLImageElement) {
-			this._image.src = value;
-			this._image.alt = this._title.textContent;
-		}
+		this.setImage(this._image, value, this.title);
 	}
 
 	//Проверка на 'Бесценно'
@@ -111,17 +108,7 @@ export class Card<T> extends Component<ICard> {
 
 	//Описание карточки
 	set description(value: string | string[]) {
-		if (Array.isArray(value)) {
-			this._description.replaceWith(
-				...value.map((str) => {
-					const descTemplate = this._description.cloneNode() as HTMLElement;
-					this.setText(descTemplate, str);
-					return descTemplate;
-				})
-			);
-		} else {
-			this.setText(this._description, value);
-		}
+		this.setText(this._description, value);
 	}
 
 	//Описание категории товара

@@ -1,6 +1,6 @@
 import './scss/styles.scss';
 import { API_URL, CDN_URL } from './utils/constants';
-import { ICardItem, IOrder } from './types/index';
+import { ICardItem, IOrder, PaymenthMethods } from './types/index';
 import { EventEmitter } from './components/base/events';
 import { WebLarekAPI } from './components/data/ExtensionApi';
 import {
@@ -37,6 +37,11 @@ const appData = new AppData({}, events);
 const basket = new Basket(cloneTemplate(basketTemplate), events);
 const orderForm = new OrderAddress(cloneTemplate(orderTemplate), events);
 const contacts = new OrderContacts(cloneTemplate(contactsTemplate), events);
+const success = new Success(cloneTemplate(successTemplate), {
+	onClick: () => {
+		modal.close();
+	},
+});
 
 // Обработчик изменения каталога
 events.on<CatalogChangeEvent>('items:changed', () => {
@@ -146,7 +151,7 @@ events.on('order:open', () => {
 			errors: [],
 		}),
 	});
-	appData.order.id = appData.basket.map((item) => item.id);
+	appData.order.items = appData.basket.map((item) => item.id);
 });
 
 events.on(
@@ -162,6 +167,11 @@ events.on('order:ready', () => {
 
 events.on('contacts:ready', () => {
 	contacts.valid = true;
+});
+
+// Обработчик переключения способов оплаты в доставке
+events.on('order.payment:change', (data: { target: PaymenthMethods }) => {
+	appData.setPaymentMethod(data.target);
 });
 
 //валидация полей доставки
@@ -205,11 +215,7 @@ events.on('contacts:submit', () => {
 			appData.clearBasket(); // Очистка корзины
 			appData.clearOrder(); // Очистка данных заказа
 			orderForm.resetButtonState(); // очистка кнопок способа оплаты
-			const success = new Success(cloneTemplate(successTemplate), {
-				onClick: () => {
-					modal.close();
-				},
-			});
+			success;
 			modal.render({
 				content: success.render({
 					total: result.total,

@@ -140,7 +140,7 @@ type FormErrors = Partial<Record<keyof IOrder, string>>;
 
 ### Класс Model
 
-Абстрактный класс, обощающий в себе конструктор и метод привязки события.
+Абстрактный класс, представляющий базовую модель данных. Отличает модель от простых объектов с данными и предоставляет базовый функционал
 
 Конструктор: (data: Partial, protected events: IEvents) принимает данные модели и объект событий; копирует данные в модель;
 
@@ -189,17 +189,19 @@ type FormErrors = Partial<Record<keyof IOrder, string>>;
 - addBasket(item: ICardItem) - добавляет товар в корзину;
 - productOrder(item: ICardItem): boolean - проверка, находится ли продукт в заказе;
 - clearBasket() - очищает товары в корзине;
+- clearOrder() - очищает данные заказа;
 - updateBasket() - обновляет корзину;
 - removeFromBasket(id: string) - удаляет товар из корзины;
-- clearOrder() - очищает данные заказа;
+- updateBasket() - обновляет корзину;
 - getOrderProducts(): ICardItem[] - получает продкуты из заказа;
 - getTotalPrice(): number - возвращает общую цену товаров;
-- setCatalog(item: ICardItem[]) - установить данные в каталог (вывести все наши продукты на страницу);
+- setCatalog(item: ICardItem[]) -устанавливает каталог продуктов;
 - setPreview(item: ICardItem) - установливает данные в первью;
 - validateContact(): boolean - проверяет значения данных контактов;
 - setContactField(field: keyof IOrderForm, value: string) - устанавливает значения в данные контактов заказа;
 - validateOrder() - проверяет валидность полей формы заказа;
-- setOrderField(item: keyof IOrderForm, value: string) - обновляет поле формы заказа, проверяет валидность заказа;
+- setOrderField(item: keyof IOrderForm, value: string) - установливает поля адреса доставки;
+- setPaymentMethod(method: string) - устанавливает метод оплаты;
 
 ### Класс WebLarekAPI
 
@@ -273,7 +275,7 @@ locked: boolean;
 - description - устанавливает описание карточки;
 - price - устанавливает цену карточки и, если цена установлена, отключает кнопку карточки;
 - button - устанавливает кнопку действия карточки;
-- buttonModal - устанавливает кнопку модального окна;
+- buttonModal - кнопка модального окна (если она есть)
 
 Конструктор: (container: HTMLElement, actions?: ICardAction) принимает контейнер для карточки и объект действий. В конструкторе устанавливаются обработчики событий для категории, заголовка, описания, кнопки, стоимости
 
@@ -298,10 +300,13 @@ onClick(evt:MouseElement) => void;
 Методы:
 
 - disableButton(value: number | null) - отключение кнопки модального окна;
+- set id - установка идентификатора карточки
 - set title(value: string) - устанавливает заголовок товара;
+- set buttonTitle - установка текста кнопки;
+- set image - установка изображения карточки;
 - set price(value: number | null) - проверяет на наличие цены;
-- set description(value: string | string[]) - устанавливает описание карточки;
 - set category(value: string) - кстанавливает категорию товара;
+- set description(value: string | string[]) - устанавливает описание карточки;
 
 ### Класс BasketElement
 
@@ -373,9 +378,9 @@ errors: string[];
 Методы:
 
 - onInputChange - обрабатывает изменения ввода в поля формы;
-- valid - валидация полей форм;
-- errors - чистит правильно заполненную форму;
-- render - находит ошибку;
+- set valid - устанавливает валидность формы; включает или выключает кнопку отправки;
+- set errors - устанавливает ошибки и обновляет их отображение;
+- render - рендерит состояние формы и обновляем ее элементы;
 
 ### OrderAddress
 

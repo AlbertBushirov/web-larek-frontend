@@ -19,14 +19,22 @@ export interface ICardItem {
 	button: string;
 }
 
-// Данные заказа
-export interface IOrder {
+// Интерфейс формы доставки заказа
+export interface IOrderForm {
 	payment: string;
 	address: string;
+}
+
+// Интерфейс контактов заказа
+export interface IOrderContacts {
 	email: string;
 	phone: string;
+}
+
+// Данные заказа
+export interface IOrder extends IOrderForm, IOrderContacts {
+	items: string[];
 	total: number;
-	id: string[];
 }
 
 // Корзина
@@ -36,6 +44,8 @@ export interface IBasket {
 	price: number;
 	totalPrice: number;
 }
+
+export type PaymenthMethods = 'card' | 'cash';
 
 // Тип ошибок формы
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
