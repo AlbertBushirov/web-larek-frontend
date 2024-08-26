@@ -305,8 +305,8 @@ onClick(evt:MouseElement) => void;
 - set buttonTitle - установка текста кнопки;
 - set image - установка изображения карточки;
 - set price(value: number | null) - проверяет на наличие цены;
-- set category(value: string) - кстанавливает категорию товара;
 - set description(value: string | string[]) - устанавливает описание карточки;
+- set category(value: string) - кстанавливает категорию товара;
 
 ### Класс BasketElement
 
@@ -317,7 +317,6 @@ onClick(evt:MouseElement) => void;
 - index - индекс элемента в корзине;
 - title - заголовок элемента;
 - price - цена элемента;
-- button - кнопка действия элемента;
 
 Конструктор: (container: HTMLElement, index: number, action?: ICardAction) конструктор принимает контейнер для элемента корзины, индекс элемента корзины и действие, выполняемое при клике на элемент корзины; в конструкторе присутствует обработчик события клика
 
