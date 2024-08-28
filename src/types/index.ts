@@ -25,6 +25,14 @@ export interface IOrderForm {
 	address: string;
 }
 
+export interface IOrderForms {
+	payment?: string;
+	address?: string;
+	phone?: string;
+	email?: string;
+	total?: string | number;
+}
+
 // Интерфейс контактов заказа
 export interface IOrderContacts {
 	email: string;

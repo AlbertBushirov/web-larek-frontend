@@ -2,7 +2,6 @@ import {
 	FormErrors,
 	ICardItem,
 	IProductItem,
-	IOrder,
 	PaymenthMethods,
 } from '../../types';
 import { Model } from '../base/Model';
@@ -22,10 +21,8 @@ export interface IOrderForm {
 export class AppData extends Model<IProductItem> {
 	basket: ICardItem[] = [];
 	items: ICardItem[];
-	order: IOrder = {
+	order: IOrderForm = {
 		payment: '',
-		items: [],
-		total: 0,
 		email: '',
 		phone: '',
 		address: '',
@@ -59,8 +56,6 @@ export class AppData extends Model<IProductItem> {
 			address: '',
 			email: '',
 			phone: '',
-			total: 0,
-			items: [],
 		};
 	}
 
@@ -76,16 +71,14 @@ export class AppData extends Model<IProductItem> {
 		this.emitChanges('basket:changed');
 	}
 
+	//Получение продуктов из заказа
 	getOrderProducts(): ICardItem[] {
 		return this.basket;
 	}
 
 	//Подсчет общей стоимости
-	getTotalPrice(): number {
-		return this.order.items.reduce(
-			(total, item) => total + this.basket.find((it) => it.id === item).price,
-			0
-		);
+	getTotalPrice() {
+		return this.basket.reduce((total, item) => total + item.price, 0);
 	}
 
 	//Добавление каталога карточек на главную страницу
@@ -126,7 +119,7 @@ export class AppData extends Model<IProductItem> {
 	}
 
 	//Валидация адреса
-	validateOrder() {
+	validateAdress() {
 		const errors: typeof this.formErrors = {};
 		if (!this.order.payment) {
 			errors.payment = 'Укажите способ оплаты';
@@ -135,19 +128,19 @@ export class AppData extends Model<IProductItem> {
 			errors.address = 'Укажите адрес';
 		}
 		this.formErrors = errors;
-		this.events.emit('form:errors:change', this.formErrors);
+		this.events.emit('form:errors:change', errors);
 		return Object.keys(errors).length === 0;
 	}
 
 	setOrderField(item: keyof IOrderForm, value: string) {
 		this.order[item] = value;
-		if (this.validateOrder()) {
+		if (this.validateAdress()) {
 			this.events.emit('order:ready', this.order);
 		}
 	}
-
+	//Метод оплаты
 	setPaymentMethod(method: string) {
 		this.order.payment = method as PaymenthMethods;
-		this.validateOrder();
+		this.validateAdress();
 	}
 }

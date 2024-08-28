@@ -17,7 +17,19 @@ interface ICard {
 	button: string;
 }
 
-export class Card<T> extends Component<ICard> {
+interface Category {
+	[key: string]: string;
+}
+
+const category: Category = {
+	'софт-скил': 'card__category_soft',
+	'хард-скил': 'card__category_hard',
+	кнопка: 'card__category_button',
+	другое: 'card__category_other',
+	дополнительное: 'card__category_additional',
+};
+
+export class Card extends Component<ICard> {
 	protected _title: HTMLElement;
 	protected _image?: HTMLImageElement;
 	protected _category?: HTMLElement;
@@ -25,15 +37,6 @@ export class Card<T> extends Component<ICard> {
 	protected _price: HTMLElement;
 	protected _button?: HTMLButtonElement;
 	protected _buttonModal?: HTMLButtonElement;
-
-	// Сопоставление категорий с ключами
-	private categoryKey: Record<string, string> = {
-		'софт-скил': '_soft',
-		'хард-скил': '_hard',
-		кнопка: '_button',
-		дополнительное: '_additional',
-		другое: '_other',
-	};
 
 	constructor(
 		protected blockName: string,
@@ -114,10 +117,7 @@ export class Card<T> extends Component<ICard> {
 	//Описание категории товара
 	set category(value: string) {
 		this.setText(this._category, value);
-		const category = this._category.classList[0];
-		this._category.className = '';
-		this._category.classList.add(`${category}`);
-		this._category.classList.add(`${category}${this.categoryKey[value]}`);
+		this.toggleClass(this._category, category[value], true);
 	}
 }
 

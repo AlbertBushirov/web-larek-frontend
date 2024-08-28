@@ -1,39 +1,20 @@
 import { IOrder } from '../../types/index';
-import { ensureElement } from '../../utils/utils';
+import { ensureAllElements, ensureElement } from '../../utils/utils';
 import { IEvents } from '../base/events';
 import { Form } from './Form';
 
 // Модалньое окно с адресом доставки
 export class OrderAddress extends Form<IOrder> {
+	protected _button: HTMLButtonElement[];
 	protected _card: HTMLButtonElement;
 	protected _cash: HTMLButtonElement;
-	protected _address: HTMLInputElement;
-	protected _contactButton: HTMLButtonElement;
-	protected _paymentContainer: HTMLDivElement;
-	protected _paymentButton: HTMLButtonElement[];
-	protected _addressInput: HTMLInputElement;
 
-	constructor(container: HTMLFormElement, events: IEvents) {
-		super(container, events);
-
-		// Находим элементы формы в контейнере
-		this._paymentContainer = ensureElement<HTMLDivElement>(
-			'.order__buttons',
-			this.container
+	constructor(protected container: HTMLFormElement, event: IEvents) {
+		super(container, event);
+		this._button = ensureAllElements<HTMLButtonElement>(
+			'.button_alt',
+			container
 		);
-		this._paymentButton = Array.from(
-			this._paymentContainer.querySelectorAll('.button_alt')
-		);
-		this._addressInput = this.container.elements.namedItem(
-			'address'
-		) as HTMLInputElement;
-
-		// Добавляем обработчик событий на контейнер кнопок оплаты
-		this._paymentContainer.addEventListener('click', (e: MouseEvent) => {
-			const target = e.target as HTMLButtonElement;
-			this.setToggleClassPayment(target.name);
-			events.emit(`order.payment:change`, { target: target.name });
-		});
 
 		this._cash = ensureElement<HTMLButtonElement>(
 			'.button.button_alt[name="cash"]',
@@ -44,21 +25,24 @@ export class OrderAddress extends Form<IOrder> {
 			'.button.button_alt[name="card"]',
 			this.container
 		);
-	}
 
-	//Переключение классов кнопки оплаты
-	setToggleClassPayment(className: string) {
-		this._paymentButton.forEach((button) => {
-			this.toggleClass(button, 'button_alt-active', button.name === className);
+		this._button.forEach((button) => {
+			button.addEventListener('click', () => {
+				this.setToggleClassPayment = button.name;
+				event.emit('payment:change', button);
+			});
 		});
 	}
 
-	/**
-	 * Установка значения адреса.
-	 * @param {string} value - Новое значение адреса.
-	 */
 	set address(value: string) {
-		this._addressInput.value = value;
+		(this.container.elements.namedItem('address') as HTMLInputElement).value =
+			value;
+	}
+
+	set setToggleClassPayment(value: string) {
+		this._button.forEach((button) => {
+			this.toggleClass(button, 'button_alt-active', button.name === value);
+		});
 	}
 
 	resetButtonState() {
